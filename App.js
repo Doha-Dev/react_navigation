@@ -11,6 +11,7 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Text, Image, Button, Linking } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { 
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -22,11 +23,38 @@ import UserScreen from './src/user';
 import LogoTitle from './src/logo';
 import DrawerHomeScreen from './src/home_drawer';
 import DrawerUserScreen from './src/user_drawer';
+import TabHomeScreen from './src/home_tab';
+import TabUserScreen from './src/user_tab';
+import TabMessageScreen from './src/message_tab';
 import PictogramHome from './src/assets/pics/home_icon.png';
 import SideDrawer from './src/my_drawer';
+import Icon from 'react-native-vector-icons/dist/Ionicons';
 
 const Stack = createStackNavigator();
 const Drawer = createDrawerNavigator();
+const Tab = createBottomTabNavigator();
+
+const TabBarIcon = (focused, name) => {
+  let iconImagePath;
+
+  if (name === 'Home') {
+    iconImagePath = require('./src/assets/pics/home_icon.png')
+  } else if (name === 'User') {
+    iconImagePath = require('./src/assets/pics/user.png')
+  } else if (name === 'Message') {
+    iconImagePath = require('./src/assets/pics/message.png')
+  }
+
+  return (
+    <Image
+      style = {{
+        width: focused ? 30 : 20,
+        height: focused ? 30 : 20,
+      }}
+      source = {iconImagePath}
+    />
+  )
+}
 
 // CustomDrawerContent = (props) => {
 //   return (
@@ -59,39 +87,70 @@ class App extends Component {
 
   render () {
     return (
+      // == Tab ==
       <NavigationContainer>
-        <Drawer.Navigator
+        <Tab.Navigator
           initialRouteName="Home"
-          drawerType="front" // front, slide, permanent
-          drawerPosition="right"
-          drawerStyle={{
-            backgroundColor: '#c6cbef',
-            width: 200
+          tabBarOptions={{
+            activeBackgroundColor: 'skyblue',
+            activeTintColor: 'blue',
+            inactiveTintColor: '#fff',
+            style: {
+              backgroundColor: '#c6cbef'
+            },
+            labelPosition: 'below-icon' // below-icon, beside-icon
           }}
-          drawerContentOptions={{
-            activeTintColor: 'red',
-            activeBackgroundColor: 'skyblue'
-          }}
-          // drawerContent={props => <CustomDrawerContent {...props}/>}
-          drawerContent={props => <SideDrawer {...props}/>}
+          screenOptions={ ({route}) => ({
+            tabBarLabel: route.name,
+            tabBarIcon: ({focused}) => (
+              TabBarIcon(focused, route.name)
+            )
+          })}
         >
-          <Drawer.Screen
-            name="Home"
-            component={DrawerHomeScreen}
-            options={{
-              drawerIcon: () => (
-                <Image
-                  source={PictogramHome}
-                  style={{width: 40, height: 40}}
-                />
-              )
-            }}
-          />
-          <Drawer.Screen name="User" component={DrawerUserScreen}/>
-        </Drawer.Navigator>
+          <Tab.Screen name="Home" component={TabHomeScreen}/>
+          <Tab.Screen name="User" component={TabUserScreen}/>
+          <Tab.Screen name="Message" component={TabMessageScreen}/>
+        </Tab.Navigator>
       </NavigationContainer>
 
 
+
+      // == Drawer ==
+      // <NavigationContainer>
+      //   <Drawer.Navigator
+      //     initialRouteName="Home"
+      //     drawerType="front" // front, slide, permanent
+      //     drawerPosition="right"
+      //     drawerStyle={{
+      //       backgroundColor: '#c6cbef',
+      //       width: 200
+      //     }}
+      //     drawerContentOptions={{
+      //       activeTintColor: 'red',
+      //       activeBackgroundColor: 'skyblue'
+      //     }}
+      //     // drawerContent={props => <CustomDrawerContent {...props}/>}
+      //     drawerContent={props => <SideDrawer {...props}/>}
+      //   >
+      //     <Drawer.Screen
+      //       name="Home"
+      //       component={DrawerHomeScreen}
+      //       options={{
+      //         drawerIcon: () => (
+      //           <Image
+      //             source={PictogramHome}
+      //             style={{width: 40, height: 40}}
+      //           />
+      //         )
+      //       }}
+      //     />
+      //     <Drawer.Screen name="User" component={DrawerUserScreen}/>
+      //   </Drawer.Navigator>
+      // </NavigationContainer>
+
+
+
+      // == Stack ==
       // <NavigationContainer>
       //   <Stack.Navigator 
       //     initialRouteName="Home"
